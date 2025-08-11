@@ -1,0 +1,28 @@
+services:
+  hyperclovax_0.5B:
+    build:
+      context: .
+    image: python3.13.6:slim-debian12-uv
+    container_name: hyperclovax_0.5B
+    tty: true
+    ipc: host
+    environment:
+      - DISPLAY=${DISPLAY:-host.docker.internal:0}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - .:/root/hyperclovax_0.5B
+      - /tmp/.X11-unix:/tmp/.X11-unix
+
+  hyperclovax_0.5B-gpu:
+    extends:
+      service: hyperclovax_0.5B
+    container_name: hyperclovax_0.5B-gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    profiles:
+      - gpu
